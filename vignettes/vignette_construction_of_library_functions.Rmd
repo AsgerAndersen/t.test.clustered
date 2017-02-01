@@ -1,0 +1,98 @@
+---
+title: "Construction of the library functions"
+author: "Asger Andersen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Construction of the library functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Modelling the cluster randomized design
+
+The experiment is assumed to have measured responses from individuals in two groups (intervention group and  control group). The individuals have been assigned to the one of the two groups based on cluster randomization.
+
+Let $X_{ijl}$ be the l'th response in the j'th cluster of the i'th group. We assume that
+
+$X_{ijl} = \mu_i + \beta_{ij} + \epsilon_{ijl}$
+
+where the group effect $\mu_i$ is a fixed effect, and the cluster effect $\beta_{ij}$ is a random effect drawn from a normal distribution with mean 0 and standard devition $\sigma_c$. Likewise we assume that the noise $\epsilon_{ijl}$ is drawn from a normal distribution with mean 0 and standard deviation $\sigma_e$. At last, we assume independence of all the cluster effects and noise terms. Instead of parametrizing the variance components in the model with $\sigma_c^2$ and $\sigma_e^2$, we will often instead speak of the overall variance $\sigma^2  = \sigma_c^2 + \sigma_e^2$ and the intracluster correlation coefficient $\rho = \frac{\sigma_c^2}{\sigma_c^2 + \sigma_e^2}$.
+
+## Some notation:
+
+* $M$: The total number of individuals in the study
+* $M_i$: The number of individuals in the i'th group
+* $K$: The total number of clusters in the study
+* $k_i$: The number of clusters in the i'th group
+* $m_{ij}$: The number of individuals in the j'th cluster in the i'th group
+* $\overline{X}_i$: The mean of in the i'th group
+* $\overline{X}_{ij}$: The mean of the j'th cluster in the i'th group
+
+## Construction of the t test for cluster randomized data
+
+We can test the null hypothesis
+
+$H_0: \mu_1 - \mu_2 = 0$
+
+with a t-test that has been adjusted to work with the cluster randomized design. This approach and all the following formulas are taken directly from (1), page 111-115. 
+
+We construct the cluster-adjusted t-statistic
+
+$\tilde{t} = \frac{\overline{X}_1 - \overline{X}_2}{\widehat{SE}(\overline{X}_1 - \overline{X}_2)}$
+
+where $\overline{X}_1$ is the mean of the intervention group, $\overline{X}_2$ is the mean of the control group, and $\widehat{SE}(\overline{X}_1 - \overline{X}_2)$ is the estimated standard deviation of $\overline{X}_1 - \overline{X}_2$. This estimate is adjusted according to the given cluster randomized design:
+
+$\widehat{SE}(\overline{X}_1 - \overline{X}_2) = S_p\left[\frac{C_1}{M_1} + \frac{C_2}{M_2}\right]^{\frac{1}{2}}$
+
+where $S_p$ is the usual pooled standard deviation over the two groups and
+
+$C_i = 1 + (\overline{m}_{Ai}-1)\widehat{\rho}$
+
+where $\widehat{\rho}$ is the estimate of the intracluster correlation coefficient and 
+
+$\overline{m}_{Ai} = \sum_{j=1}^{k_i} \frac{m_{ij}^2}{M_i}$
+
+We get the estimate $\widehat{\rho}$ by first using the mean squared error within the clusters (MSW) and the mean squared error between the clusters (MSC) to get the  estimates for $\sigma_c$ and $\sigma_e$. That is: 
+
+* $\widehat{\sigma_e^2} = MSW$
+* $\widehat{\sigma_c^2} = \frac{MSC - MSW}{m_0}$
+* $MSW = \sum_{i=1}^2 \sum_{j=1}^{k_i} \sum_{k=1}^{m_{ij}} \frac{(X_{ijk} - \overline{X}_{ij})^2}{M - K}$
+* $MSC = \sum_{i=1}^2 \sum_{j=1}^{k_i}m_{ij}\frac{(\overline{Y}_{ij}-\overline{Y}_i)^2}{K-2}$
+* $m_0 = \frac{M - \sum_{i=1}^2\overline{m}_{Ai}}{K-2}$
+
+Then we estimate $\widehat{\rho}$ by:
+
+$\widehat{\rho} = \frac{\widehat{\sigma_c^2}}{\widehat{\sigma_c^2} + \widehat{\sigma_e^2}}$
+
+The adjusted t statistic $\tilde{t}$ will have a t-distrubtion with $K-2$ degrees of freedom. Since we know the distribution of the t statistic, we can now use a standard significance test to test the null hypothesis that the means of the groups are equal. 
+
+## Construction of the power calculation for the adjusted t test
+
+When we test the null hypothesis $H_0: \mu_1 - \mu_2 = 0$, we contruct the cluster-adjusted t-statistic $\tilde{t}$ and use this in a standard significance test with the t-distribution with $K-2$ degrees of freedom and a significance level $\alpha$. Call the critical region of the test $\mathcal{C}$. Given the truth of the alternative hypothesis
+
+$\mu_1 - \mu_2 = \delta$
+
+we now want to calculate the power $\mathcal{P}$ of the test. This is given as
+
+$\mathcal{P} = \text{P}(\tilde{t} \in \mathcal{C})$
+
+To calculate this quantity, we need to know the distribution of $\tilde{t}$ under the alternative hypothesis. *If the design is balanced*, then we get from (2) that $\tilde{t}$ follows a non-central t distribution with $K-2$ degrees of freedom and non-centrality-parameter
+
+$\eta = \frac{|\delta|}{\sigma \left( \frac{4(1+(m-1)\rho)}{M} \right)^{\frac{1}{2}}}$
+
+where $m$ is the number of individuals in each cluster. The design is balanced, if the number of clusters are the same in each group and the number of individuals are the same in each cluster across both groups.
+
+If the design is unbalanced, we do not know the exact distribution of $\tilde{t}$. In this case, (1) page 57 suggests (in a related case) that we can try calculating the power using the non-central t distribution with $\overline{K}-2$ degrees of freedom and the non-centrality-parameter
+
+$\eta = \frac{|\delta|}{\sigma \left( \frac{4(1+(\overline{m}-1)\rho)}{M} \right)^{\frac{1}{2}}}$
+
+where $\overline{K}$ is the average of the number of clusters per group, and $\overline{m}$ is the average cluster size across both groups. Although using $\overline{K}$ degrees of freedom is conceptually dubious, this approach is implemented in \texttt{power.t.test.clustered}, and simulation-tests suggests that it works quite well, at least if the design is not too unbalanced (see the vignette Testing the power calculation against the power simulation).
+
+### References
+
+(1) Allan Donner & Neil Klar: Design and Analysis of Cluster Randomization Trials in Health Research, 2000.
+(2) Allan Donner & Neil Klar: Statistical Considerations in the Design and Analysis of Community Intervention Trials, Journal of Clinical Epidemiology, vol. 49, no. 4, pp. 435-439, 1996.
+(3)
+
+

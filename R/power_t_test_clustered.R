@@ -4,14 +4,15 @@
 #' of some other parameter needed to obtain a specified power of the test. 
 #' The calculated power is only exact, if the design is balanced (same numbers
 #' of clusters in each group, and same number of responses in each cluster). 
-#' See XXXX for a description of the assumptions and construction of the 
+#' See the vignette "Construction of the library functions" for a description 
+#' of the assumptions and construction of the 
 #' cluster adjusted t test and how to calculate its power.
 #' 
-#' @param cluster_group_1 a vector that contains the sizes of the clusters in 
+#' @param clusters_group_1 a vector that contains the sizes of the clusters in 
 #' group 1. If group 1 for instance has one cluster with 10 measurements, and 
 #' three clusters with 12 measurements each, then we have to set 
 #' \code{clusters_group_1} to \code{c(10,12,12,12)}.
-#' @param cluster_group_2 a vector that contains the sizes of the clusters in 
+#' @param clusters_group_2 a vector that contains the sizes of the clusters in 
 #' group 2.
 #' @param delta the difference between the group means (the treatment effect).
 #' @param sd the overall standard deviation of the responses, which is assumed 
@@ -35,27 +36,32 @@
 #' only be specified, if \code{sample_size_calc} is \code{TRUE}, and 
 #' \code{clusters_pr_group} is not specified.
 #' 
-#' @return A list - If \code{sample_size_calc} is set to \code{FALSE}, then one the 
+#' @return A list
+#' 
+#' If \code{sample_size_calc} is set to \code{FALSE}, then one of the 
 #' parameters \code{delta, sd, rho, power} must be left unspecified. The 
-#' unspecified parameter will then be calculated by the function. If 
-#' \code{sample_size_calc} is set to \code{TRUE}, then all of the parameters 
+#' unspecified parameter will then be calculated by the function. 
+#' 
+#' If \code{sample_size_calc} is set to \code{TRUE}, then all of the parameters 
 #' \code{delta, sd, rho, power} must be specified, but \code{clusters_group_1} 
 #' and \code{clusters_group_2} must not be specified. On top of that, either 
 #' \code{clusters_pr_group} or \code{cluster_size} must be specified. The 
-#' other one will then be calculated by the function. Whether or not 
-#' \code{sample_size_calc} is \code{TRUE} or \code{FALSE}, the function returns 
+#' other one will then be calculated by the function. 
+#' 
+#' Whether or not \code{sample_size_calc} is \code{TRUE} or \code{FALSE}, the 
+#' function returns 
 #' a list of all of the arguments to the function and the calculated parameter 
 #' (the argument left unspecified when calling the function)
 #' 
 #' @example examples/power.t.test.clustered.ex1.R
 #' 
-#' @seealso \code{\link{t.test.clustered.pval}} for p value of the cluster 
-#' adjusted t test, \code{\link{t.test.clustered.stat}} for value of the 
-#' cluster adjusted t statistic and \code{\link{simulate.power.t.test.clustered}}
+#' @seealso \code{\link{t_test_clustered_pval}} for p value of the cluster 
+#' adjusted t test, \code{\link{t_test_clustered_stat}} for value of the 
+#' cluster adjusted t statistic and \code{\link{simulate_power_t_test_clustered}}
 #' for power simulation of the cluster adjusted t test.
 #' 
 #' @export 
-power.t.test.clustered <- function (clusters_group_1=NULL, clusters_group_2=clusters_group_1, delta=NULL, sd = NULL, rho = NULL, 
+power_t_test_clustered <- function (clusters_group_1=NULL, clusters_group_2=clusters_group_1, delta=NULL, sd = NULL, rho = NULL, 
                               power = NULL, alternative=c("one.sided","two.sided"), sig_level = 0.05,
                               sample_size_calc=FALSE, clusters_pr_group=NULL, cluster_size=NULL) {
   
@@ -110,11 +116,11 @@ power.t.test.clustered <- function (clusters_group_1=NULL, clusters_group_2=clus
     this_q <- qt(sig_level/tside, df=this_df, lower.tail = FALSE) #Critical value under the null-hypothesis
   
     if (tside==1) {
-    pt(q=this_q, df=this_df, ncp = this_ncp, lower.tail = FALSE) #Power, one-sided test
+    stats::pt(q=this_q, df=this_df, ncp = this_ncp, lower.tail = FALSE) #Power, one-sided test
     }
     else if (tside==2) {
-      (pt(q=this_q, df=this_df, ncp = this_ncp, lower.tail = FALSE)  +
-        pt(q=-this_q, df=this_df, ncp = this_ncp, lower.tail = TRUE)) #Power, two-sided test
+      (stats::pt(q=this_q, df=this_df, ncp = this_ncp, lower.tail = FALSE)  +
+        stats::pt(q=-this_q, df=this_df, ncp = this_ncp, lower.tail = TRUE)) #Power, two-sided test
     }
   })
   #------------------------------------------------------------------------------------------
@@ -126,32 +132,32 @@ power.t.test.clustered <- function (clusters_group_1=NULL, clusters_group_2=clus
   if (is.null(power)) {power <- eval(p.body)}
   
   else if (is.null(sd)) {
-    sd <- uniroot(function(sd) eval(p.body) - power, delta * 
+    sd <- stats::uniroot(function(sd) eval(p.body) - power, delta * 
                     c(1e-07, 1e+07), tol = tol, extendInt = "downX")$root
   }
   
   else if (is.null(delta)) {
-    delta <- uniroot(function(delta) eval(p.body) - power, 
+    delta <- stats::uniroot(function(delta) eval(p.body) - power, 
                      sd * c(1e-07, 1e+07), tol = tol, extendInt = "upX")$root
   }
   
   else if (is.null(sig_level)) {
-    sig_level <- uniroot(function(sig_level) eval(p.body) - 
+    sig_level <- stats::uniroot(function(sig_level) eval(p.body) - 
                            power, c(1e-10, 1 - 1e-10), tol = tol, extendInt = "yes")$root
   }
   
   else if (is.null(rho)) {
-    rho <- uniroot(function(rho) eval(p.body) - 
+    rho <- stats::uniroot(function(rho) eval(p.body) - 
                      power, c(1e-10, 1 - 1e-10), tol = tol, extendInt = "yes")$root
   }
   
   else if (sample_size_calc && is.null(clusters_pr_group)) {
-    clusters_pr_group <- uniroot(function(clusters_pr_group) eval(p.body) - 
+    clusters_pr_group <- stats::uniroot(function(clusters_pr_group) eval(p.body) - 
                      power, c(2, 1e+10), tol = tol, extendInt = "upX")$root
   }
   
   else if (sample_size_calc && is.null(cluster_size)) {
-    cluster_size <- uniroot(function(cluster_size) eval(p.body) - 
+    cluster_size <- stats::uniroot(function(cluster_size) eval(p.body) - 
                      power, c(1, 1e+10), tol = tol, extendInt = "upX")$root
   }
   #------------------------------------------------------------------------------------------

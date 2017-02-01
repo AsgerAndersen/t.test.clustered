@@ -1,4 +1,4 @@
-test.calcpower.against.simpower <- function(num_test=10, num_experiments_pr_test=100, arg_clusters_group_1=NULL,
+test_calcpower_against_simpower <- function(num_test=10, num_experiments_pr_test=100, arg_clusters_group_1=NULL,
                                          arg_clusters_group_2=arg_clusters_group_1,arg_delta=NULL,
                                          arg_sd=NULL,arg_rho=NULL, arg_alt=NULL, arg_sig_level=0.05,
                                          balanced=FALSE,kind_of_balanced=FALSE, arg_cluster_size=NULL,arg_clusters_pr_group=NULL,
@@ -15,7 +15,7 @@ test.calcpower.against.simpower <- function(num_test=10, num_experiments_pr_test
   upper_clus_pr_group <- bounds_cluster_pr_group[2]
   
   clusters <- list()
-  
+  browser()
   for (j in 1:num_test) {
     
     if (balanced) {
@@ -38,9 +38,9 @@ test.calcpower.against.simpower <- function(num_test=10, num_experiments_pr_test
       clusters_group_2 <- sample(lower_clus_size:upper_clus_size,num_clus_group_2,replace=TRUE)
     }
     
-    if (is.null(arg_sd)) {sd <- runif(1,min=0,max=10)}
+    if (is.null(arg_sd)) {sd <- stats::runif(1,min=0,max=10)}
     else {sd <- arg_sd}
-    if (is.null(arg_rho)) {rho <- runif(1,min=0,max=bound_rho)}
+    if (is.null(arg_rho)) {rho <- stats::runif(1,min=0,max=bound_rho)}
     else {rho <- arg_rho}
     if (is.null(arg_alt)) {
       find_alt <- sample(1:2,1)
@@ -53,18 +53,18 @@ test.calcpower.against.simpower <- function(num_test=10, num_experiments_pr_test
     }
     else {alt <- arg_alt}
     if (is.null(arg_delta)) {
-      if (alt == "one.sided") {delta <- runif(1,min=0,max=5)}
-      if (alt == "two.sided") {delta <- runif(1,min=-5,max=5)}
+      if (alt == "one.sided") {delta <- stats::runif(1,min=0,max=5)}
+      if (alt == "two.sided") {delta <- stats::runif(1,min=-5,max=5)}
     }
     else {delta <- arg_delta}
-    if (is.null(arg_sig_level)) {sig_level <- runif(1,min=0.01,max=0.1)}
+    if (is.null(arg_sig_level)) {sig_level <- stats::runif(1,min=0.01,max=0.1)}
     else {sig_level <- arg_sig_level}
     
-    simulated_power <- simulate.power.t.test.clustered(num_experiments = num_experiments_pr_test,
+    simulated_power <- simulate_power_t_test_clustered(num_experiments = num_experiments_pr_test,
                                                        clusters_group_1,clusters_group_2, delta,
                                                        sd, rho, alt, sig_level)
     
-    calculated_power <- power.t.test.clustered(clusters_group_1 = clusters_group_1, clusters_group_2 = clusters_group_2,
+    calculated_power <- power_t_test_clustered(clusters_group_1 = clusters_group_1, clusters_group_2 = clusters_group_2,
                             delta=delta,sd=sd,rho=rho,alternative=alt,sig_level=sig_level)$power
     
     results[j,1] <- 100*calculated_power
@@ -83,8 +83,8 @@ test.calcpower.against.simpower <- function(num_test=10, num_experiments_pr_test
     else {
       results[j,5] <- 0
     }
-    results[j,6] <- sd(clusters_group_1)
-    results[j,7] <- sd(clusters_group_2)
+    results[j,6] <- stats::sd(clusters_group_1)
+    results[j,7] <- stats::sd(clusters_group_2)
     results[j,8] <- mean(clusters_group_1)
     results[j,9] <- mean(clusters_group_2)
     results[j,10] <- length(clusters_group_1)
@@ -100,7 +100,7 @@ test.calcpower.against.simpower <- function(num_test=10, num_experiments_pr_test
   }
   
   mean_diff <- mean(results[,3])
-  sd_diff <- sd(results[,3])
+  sd_diff <- stats::sd(results[,3])
   
   structure(list(balanced = balanced, bounds_clusters_pr_group = bounds_cluster_pr_group, 
                  bounds_cluster_size = bounds_cluster_size, results=results,

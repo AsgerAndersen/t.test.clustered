@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Asger Andersen" />
+
+<meta name="date" content="2017-02-01" />
+
+<title>Construction of the library functions</title>
+
+
+
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Construction of the library functions</h1>
+<h4 class="author"><em>Asger Andersen</em></h4>
+<h4 class="date"><em>2017-02-01</em></h4>
+
+
+
+<div id="modelling-the-cluster-randomized-design" class="section level2">
+<h2>Modelling the cluster randomized design</h2>
+<p>The experiment is assumed to have measured responses from individuals in two groups (intervention group and control group). The individuals have been assigned to the one of the two groups based on cluster randomization.</p>
+<p>Let <span class="math inline">\(X_{ijl}\)</span> be the l’th response in the j’th cluster of the i’th group. We assume that</p>
+<p><span class="math inline">\(X_{ijl} = \mu_i + \beta_{ij} + \epsilon_{ijl}\)</span></p>
+<p>where the group effect <span class="math inline">\(\mu_i\)</span> is a fixed effect, and the cluster effect <span class="math inline">\(\beta_{ij}\)</span> is a random effect drawn from a normal distribution with mean 0 and standard devition <span class="math inline">\(\sigma_c\)</span>. Likewise we assume that the noise <span class="math inline">\(\epsilon_{ijl}\)</span> is drawn from a normal distribution with mean 0 and standard deviation <span class="math inline">\(\sigma_e\)</span>. At last, we assume independence of all the cluster effects and noise terms. Instead of parametrizing the variance components in the model with <span class="math inline">\(\sigma_c^2\)</span> and <span class="math inline">\(\sigma_e^2\)</span>, we will often instead speak of the overall variance <span class="math inline">\(\sigma^2 = \sigma_c^2 + \sigma_e^2\)</span> and the intracluster correlation coefficient <span class="math inline">\(\rho = \frac{\sigma_c^2}{\sigma_c^2 + \sigma_e^2}\)</span>.</p>
+</div>
+<div id="some-notation" class="section level2">
+<h2>Some notation:</h2>
+<ul>
+<li><span class="math inline">\(M\)</span>: The total number of individuals in the study</li>
+<li><span class="math inline">\(M_i\)</span>: The number of individuals in the i’th group</li>
+<li><span class="math inline">\(K\)</span>: The total number of clusters in the study</li>
+<li><span class="math inline">\(k_i\)</span>: The number of clusters in the i’th group</li>
+<li><span class="math inline">\(m_{ij}\)</span>: The number of individuals in the j’th cluster in the i’th group</li>
+<li><span class="math inline">\(\overline{X}_i\)</span>: The mean of in the i’th group</li>
+<li><span class="math inline">\(\overline{X}_{ij}\)</span>: The mean of the j’th cluster in the i’th group</li>
+</ul>
+</div>
+<div id="construction-of-the-t-test-for-cluster-randomized-data" class="section level2">
+<h2>Construction of the t test for cluster randomized data</h2>
+<p>We can test the null hypothesis</p>
+<p><span class="math inline">\(H_0: \mu_1 - \mu_2 = 0\)</span></p>
+<p>with a t-test that has been adjusted to work with the cluster randomized design. This approach and all the following formulas are taken directly from (1), page 111-115.</p>
+<p>We construct the cluster-adjusted t-statistic</p>
+<p><span class="math inline">\(\tilde{t} = \frac{\overline{X}_1 - \overline{X}_2}{\widehat{SE}(\overline{X}_1 - \overline{X}_2)}\)</span></p>
+<p>where <span class="math inline">\(\overline{X}_1\)</span> is the mean of the intervention group, <span class="math inline">\(\overline{X}_2\)</span> is the mean of the control group, and <span class="math inline">\(\widehat{SE}(\overline{X}_1 - \overline{X}_2)\)</span> is the estimated standard deviation of <span class="math inline">\(\overline{X}_1 - \overline{X}_2\)</span>. This estimate is adjusted according to the given cluster randomized design:</p>
+<p><span class="math inline">\(\widehat{SE}(\overline{X}_1 - \overline{X}_2) = S_p\left[\frac{C_1}{M_1} + \frac{C_2}{M_2}\right]^{\frac{1}{2}}\)</span></p>
+<p>where <span class="math inline">\(S_p\)</span> is the usual pooled standard deviation over the two groups and</p>
+<p><span class="math inline">\(C_i = 1 + (\overline{m}_{Ai}-1)\widehat{\rho}\)</span></p>
+<p>where <span class="math inline">\(\widehat{\rho}\)</span> is the estimate of the intracluster correlation coefficient and</p>
+<p><span class="math inline">\(\overline{m}_{Ai} = \sum_{j=1}^{k_i} \frac{m_{ij}^2}{M_i}\)</span></p>
+<p>We get the estimate <span class="math inline">\(\widehat{\rho}\)</span> by first using the mean squared error within the clusters (MSW) and the mean squared error between the clusters (MSC) to get the estimates for <span class="math inline">\(\sigma_c\)</span> and <span class="math inline">\(\sigma_e\)</span>. That is:</p>
+<ul>
+<li><span class="math inline">\(\widehat{\sigma_e^2} = MSW\)</span></li>
+<li><span class="math inline">\(\widehat{\sigma_c^2} = \frac{MSC - MSW}{m_0}\)</span></li>
+<li><span class="math inline">\(MSW = \sum_{i=1}^2 \sum_{j=1}^{k_i} \sum_{k=1}^{m_{ij}} \frac{(X_{ijk} - \overline{X}_{ij})^2}{M - K}\)</span></li>
+<li><span class="math inline">\(MSC = \sum_{i=1}^2 \sum_{j=1}^{k_i}m_{ij}\frac{(\overline{Y}_{ij}-\overline{Y}_i)^2}{K-2}\)</span></li>
+<li><span class="math inline">\(m_0 = \frac{M - \sum_{i=1}^2\overline{m}_{Ai}}{K-2}\)</span></li>
+</ul>
+<p>Then we estimate <span class="math inline">\(\widehat{\rho}\)</span> by:</p>
+<p><span class="math inline">\(\widehat{\rho} = \frac{\widehat{\sigma_c^2}}{\widehat{\sigma_c^2} + \widehat{\sigma_e^2}}\)</span></p>
+<p>The adjusted t statistic <span class="math inline">\(\tilde{t}\)</span> will have a t-distrubtion with <span class="math inline">\(K-2\)</span> degrees of freedom. Since we know the distribution of the t statistic, we can now use a standard significance test to test the null hypothesis that the means of the groups are equal.</p>
+</div>
+<div id="construction-of-the-power-calculation-for-the-adjusted-t-test" class="section level2">
+<h2>Construction of the power calculation for the adjusted t test</h2>
+<p>When we test the null hypothesis <span class="math inline">\(H_0: \mu_1 - \mu_2 = 0\)</span>, we contruct the cluster-adjusted t-statistic <span class="math inline">\(\tilde{t}\)</span> and use this in a standard significance test with the t-distribution with <span class="math inline">\(K-2\)</span> degrees of freedom and a significance level <span class="math inline">\(\alpha\)</span>. Call the critical region of the test <span class="math inline">\(\mathcal{C}\)</span>. Given the truth of the alternative hypothesis</p>
+<p><span class="math inline">\(\mu_1 - \mu_2 = \delta\)</span></p>
+<p>we now want to calculate the power <span class="math inline">\(\mathcal{P}\)</span> of the test. This is given as</p>
+<p><span class="math inline">\(\mathcal{P} = \text{P}(\tilde{t} \in \mathcal{C})\)</span></p>
+<p>To calculate this quantity, we need to know the distribution of <span class="math inline">\(\tilde{t}\)</span> under the alternative hypothesis. <em>If the design is balanced</em>, then we get from (2) that <span class="math inline">\(\tilde{t}\)</span> follows a non-central t distribution with <span class="math inline">\(K-2\)</span> degrees of freedom and non-centrality-parameter</p>
+<p><span class="math inline">\(\eta = \frac{|\delta|}{\sigma \left( \frac{4(1+(m-1)\rho)}{M} \right)^{\frac{1}{2}}}\)</span></p>
+<p>where <span class="math inline">\(m\)</span> is the number of individuals in each cluster. The design is balanced, if the number of clusters are the same in each group and the number of individuals are the same in each cluster across both groups.</p>
+<p>If the design is unbalanced, we do not know the exact distribution of <span class="math inline">\(\tilde{t}\)</span>. In this case, (1) page 57 suggests (in a related case) that we can try calculating the power using the non-central t distribution with <span class="math inline">\(\overline{K}-2\)</span> degrees of freedom and the non-centrality-parameter</p>
+<p><span class="math inline">\(\eta = \frac{|\delta|}{\sigma \left( \frac{4(1+(\overline{m}-1)\rho)}{M} \right)^{\frac{1}{2}}}\)</span></p>
+<p>where <span class="math inline">\(\overline{K}\)</span> is the average of the number of clusters per group, and <span class="math inline">\(\overline{m}\)</span> is the average cluster size across both groups. Although using <span class="math inline">\(\overline{K}\)</span> degrees of freedom is conceptually dubious, this approach is implemented in , and simulation-tests suggests that it works quite well, at least if the design is not too unbalanced (see the vignette Testing the power calculation against the power simulation).</p>
+<div id="references" class="section level3">
+<h3>References</h3>
+<ol style="list-style-type: decimal">
+<li>Allan Donner &amp; Neil Klar: Design and Analysis of Cluster Randomization Trials in Health Research, 2000.</li>
+<li>Allan Donner &amp; Neil Klar: Statistical Considerations in the Design and Analysis of Community Intervention Trials, Journal of Clinical Epidemiology, vol. 49, no. 4, pp. 435-439, 1996.</li>
+<li></li>
+</ol>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

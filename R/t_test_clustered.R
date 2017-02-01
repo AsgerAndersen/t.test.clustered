@@ -1,7 +1,8 @@
 #' t statistic for cluster randomized designs
 #' 
 #' Calculates the value of a t statistic that has been adjusted for
-#' a cluster randomized design. See XXXX for a description of the assumptions 
+#' a cluster randomized design. See the vignette "Construction of 
+#' the library functions" for a description of the assumptions 
 #' and construction of this t statistic.
 #' 
 #' @param data_experiment a dataframe with three columns: group, cluster and 
@@ -17,15 +18,15 @@
 #' @example examples/validDataframe.R
 #' @example examples/tTestClusteredStatEx1.R
 #' 
-#' @seealso \code{\link{t.test.clustered.pval}} for p value of the cluster 
-#' adjusted t test, \code{\link{power.t.test.clustered}} for power 
+#' @seealso \code{\link{t_test_clustered_pval}} for p value of the cluster 
+#' adjusted t test, \code{\link{power_t_test_clustered}} for power 
 #' calculation of the cluster adjusted t test and 
-#' \code{\link{simulate.power.t.test.clustered}} for power simulation of 
+#' \code{\link{simulate_power_t_test_clustered}} for power simulation of 
 #' the cluster adjusted t test.
 #' 
 #' @export
 
-t.test.clustered.stat <- function(data_experiment) {
+t_test_clustered_stat <- function(data_experiment) {
   group_1_mean <- mean(subset(data_experiment,group==1)$response)
   group_2_mean <- mean(subset(data_experiment,group==2)$response)
   this_SE_est <- SE_est(data_experiment)
@@ -37,41 +38,42 @@ t.test.clustered.stat <- function(data_experiment) {
 #' Calculates the p value of a t test that has been adjusted to work in a 
 #' cluster randomized design. The t test uses the cluster adjusted t 
 #' statistic, which has a t distribution with the total number of clusters 
-#' minus 2 degrees of freedom. See XXXX for a description of the assumptions 
+#' minus 2 degrees of freedom. See the vignette "Construction of the 
+#' library functions" for a description of the assumptions 
 #' and construction of the cluster adjusted t statistic and test.
 #' 
-#' @inheritParams t.test.clustered.stat
-#' @inheritParams power.t.test.clustered
+#' @inheritParams t_test_clustered_stat
+#' @inheritParams power_t_test_clustered
 #' 
 #' @return a number - the p value of the t test for cluster randomized designs
 #' 
 #' @example examples/validDataframe.R
 #' @example examples/tTestClusteredPvalEx1.R
 #' 
-#' @seealso \code{\link{t.test.clustered.stat}} for value of the cluster adjusted 
-#' t statistic, \code{\link{power.t.test.clustered}} for power calculation of 
-#' cluster adjusted t test and \code{\link{simulate.power.t.test.clustered}} 
+#' @seealso \code{\link{t_test_clustered_stat}} for value of the cluster adjusted 
+#' t statistic, \code{\link{power_t_test_clustered}} for power calculation of 
+#' cluster adjusted t test and \code{\link{simulate_power_t_test_clustered}} 
 #' for power simulation of the cluster adjusted t test.
 #'  
 #' @export  
 
-t.test.clustered.pval <- function(data_experiment, alternative=c("one.sided","two.sided")) {
+t_test_clustered_pval <- function(data_experiment, alternative=c("one.sided","two.sided")) {
   
   num_clusters <- nlevels(data_experiment$cluster)
-  t <- t.test.clustered.stat(data_experiment)
+  t <- t_test_clustered_stat(data_experiment)
   if (alternative == "one.sided") {
-    p <- pt(t,df=num_clusters-2,lower.tail = FALSE)
+    p <- stats::pt(t,df=num_clusters-2,lower.tail = FALSE)
   }
   if (alternative == "two.sided") {
     t <- abs(t)
-    p <- (pt(-t,df=num_clusters-2,lower.tail = TRUE) + 
-            pt(t,df=num_clusters-2,lower.tail = FALSE))
+    p <- ((stats::pt(-t,df=num_clusters-2,lower.tail = TRUE)) + 
+            (stats::pt(t,df=num_clusters-2,lower.tail = FALSE)))
   }
   return (p)
 }
 
-t.test.clustered <- function(data_experiment, alt, sig_level=0.05) {
-  p <- t.test.clustered.pval(data_experiment,alt)
+t_test_clustered <- function(data_experiment, alternative, sig_level=0.05) {
+  p <- t_test_clustered_pval(data_experiment,alternative)
   if (p<sig_level) {return (0)}
   else {return (1)}
 }
@@ -96,7 +98,7 @@ pooled_sd <- function(data_experiment) {
   group_2_response <- subset(data_experiment,group==2)$response
   size_group_1 <- length(group_1_response)
   size_group_2 <- length(group_2_response)
-  pooled_sd <- ((size_group_1-1)*sd(group_1_response)+(size_group_2-1)*sd(group_2_response))/(size_group_1+size_group_2-2)
+  pooled_sd <- ((size_group_1-1)*(stats::sd(group_1_response))+(size_group_2-1)*(stats::sd(group_2_response)))/(size_group_1+size_group_2-2)
   return (pooled_sd)
 }
 
