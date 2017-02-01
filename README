@@ -1,8 +1,6 @@
 README
 
-CHANGE TO MARKDOWN to link XXXX
-
-This library contains functions that 1) implement a t test that works for cluster randomized designs, and 2) tell you the power of the test either by calculation or simulation. For further documentation, please see the R man pages (???? - what's the right name?) for how to use the functions, and XXXX for the assumptions and construction of the functions.
+This library contains functions that 1) implement a t test that works for cluster randomized designs, and 2) tell you the power of the test either by calculation or simulation. For further documentation, please see the R man page of each function for how to use the functions, and the vignette "Construction of library functions" for the assumptions and construction of the functions.
 
 
 
