@@ -66,6 +66,7 @@ Then we estimate $\widehat{\rho}$ by:
 $\widehat{\rho} = \frac{\widehat{\sigma_c^2}}{\widehat{\sigma_c^2} + \widehat{\sigma_e^2}}$
 
 The adjusted t statistic $\tilde{t}$ will have a t-distrubtion with $K-2$ degrees of freedom. Since we know the distribution of the t statistic, we can now use a standard significance test to test the null hypothesis that the means of the groups are equal. 
+The function t_test_clustered_stat calculates the value of $\tilde{t}$ for a given data set, and the function t_test_clustered_pval calculates the p-value of a significance test with $\tilde{t}$ on a given data set.
 
 ## Construction of the power calculation for the adjusted t test
 
@@ -87,12 +88,15 @@ If the design is unbalanced, we do not know the exact distribution of $\tilde{t}
 
 $\eta = \frac{|\delta|}{\sigma \left( \frac{4(1+(\overline{m}-1)\rho)}{M} \right)^{\frac{1}{2}}}$
 
-where $\overline{K}$ is the average of the number of clusters per group, and $\overline{m}$ is the average cluster size across both groups. Although using $\overline{K}$ degrees of freedom is conceptually dubious, this approach is implemented in \texttt{power.t.test.clustered}, and simulation-tests suggests that it works quite well, at least if the design is not too unbalanced (see the vignette Testing the power calculation against the power simulation).
+where $\overline{K}$ is the average of the number of clusters per group, and $\overline{m}$ is the average cluster size across both groups. Although using $\overline{K}$ degrees of freedom is conceptually dubious, this approach is implemented in power.t.test.clustered. 
+
+Instead of trying to calculate the exact power of a significance test with the statistic $\tilde{t}$, we can also try to determine it by simulation. That is, we can simulate data from the model $X_{ijl} = \mu_i + \beta_{ij} + \epsilon_{ijl}$ described above, and then we can use the test statistic $\tilde{t}$ to make a significance on the data and see if the null hypothesis is rejected or not. We can repeat this procedure n times, and the simulated power will then be the number times the null hypothesis was rejected out of the total number of tests. The function simulate_power_t_test_clustered implements this way of simulating the power.
+
+Since $\tilde{t}$ works in both balanced and unbalanced designs, the power simulation works in both cases. Therefore, it can also be used to test how well power.t.test.clustered works for unbalanced designs. This kind of test is implemented in the program testing/Testprogram.R, which uses the function test_calcpower_against_simpower, which can be found in the file R/testing_power_calc_vs_power_sim.R. The tests suggest that power.t.test.clustered also works quite well for unbalanced designs, at least if the design is not too unbalanced. The way the testing has been done can be inspected further in the mentioned files, and the test results can be inspected further in the file data/testresults.RData.
 
 ### References
 
 (1) Allan Donner & Neil Klar: Design and Analysis of Cluster Randomization Trials in Health Research, 2000.
 (2) Allan Donner & Neil Klar: Statistical Considerations in the Design and Analysis of Community Intervention Trials, Journal of Clinical Epidemiology, vol. 49, no. 4, pp. 435-439, 1996.
-(3)
 
 

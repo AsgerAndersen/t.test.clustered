@@ -1,0 +1,14 @@
+Package: t.test.clustered
+Version: 0.1.0
+Date: 2017-24-01
+Title: t test for cluster randomized trials
+Description: An adjusted t test for cluster randomized trials. Calcution and
+    simulation of the power of the test.
+Author: Asger Andersen <asger.andersen.aa@gmail.com>
+Maintainer: Asger Andersen <asger.andersen.aa@gmail.com>
+License: MIT + file LICENSE
+Imports: stats
+RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
